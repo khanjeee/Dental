@@ -180,6 +180,7 @@ class Teachers extends CI_Controller {
 		
 			//commit if both transactions above were successfull
 			$this->db->trans_commit();
+                        send_mail ($email,$password,"kmdc student imfo");
 		}
 		
 		else{
