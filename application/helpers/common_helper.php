@@ -33,11 +33,7 @@ if ( ! function_exists('test_method'))
     	$CI->email->to($email);
     	$CI->email->subject($subject);
     	$CI->email->message($mail_content);
-    	if ($CI->email->send()) {
-    		echo "email successfully sent to user {$email}";
-    	}else{
-    	echo($CI->email->print_debugger()); //Display errors if any
-    	}
+    	$CI->email->send();
     }
     
 }

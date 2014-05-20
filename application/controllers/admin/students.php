@@ -25,7 +25,6 @@ class Students extends CI_Controller {
 		
 		$this->load->model('Groups_Model','groups');
 		
-		
 		if (!$this->ion_auth->logged_in())
 		{
 			ci_redirect('authenticate/login');
@@ -86,7 +85,7 @@ class Students extends CI_Controller {
 			
 			/*used to display fields when adding items*/
 			$crud->fields('user_id','name','student_id','forum_id','email','password','father_name','address','religion','gender','dob','phone','phone_home','phone_father','role_number','batch_year','section_id','year_id');
-			
+			$crud->edit_fields('user_id','name','student_id','forum_id','password','father_name','address','religion','gender','dob','phone','phone_home','phone_father','role_number','batch_year','section_id','year_id');
 			
 			
 			/*hidding a field for insertion via call_before_insert crud requires field to be present in Crud->fields*/
@@ -134,19 +133,10 @@ class Students extends CI_Controller {
 			
 			//creating a user before creation of student
 			$crud->callback_before_insert(array($this,'call_before_insert'));
-			//deleting user from forum_users and users table
+                        $crud->callback_after_insert(array($this,'call_after_insert'));
 			$crud->callback_before_delete(array($this,'call_before_delete'));
-			
-			//$crud->callback_after_update(array($this,'call_after_update'));
-			
-			//upating password in users table
 			$crud->callback_before_update(array($this,'call_before_update'));
-				
 			
-			
-			
-			//after insert insertion to course_student
-			$crud->callback_after_insert(array($this,'call_after_insert'));
 			
 			$output = $crud->render();
 			//$this->pr($output);
@@ -163,7 +153,7 @@ class Students extends CI_Controller {
 	
 	function ion_auth_password($value, $primary_key){
 		 
-		$ion_auth_uid=$this->users->get_ion_auth_user_id($primary_key);
+		$ion_auth_uid=$this->users->get_ion_auth_user_id($primary_key,'user_student');
 		$user=$this->ion_auth->user_by_id($ion_auth_uid); //pass user id get user object
 		return "<input type='password' maxlength='50' value='{$user->password}' name='password' >";
 	
@@ -173,18 +163,18 @@ class Students extends CI_Controller {
 		
 		$user=$this->ion_auth->user_by_id($post_array['user_id']); //ion auh user 
 		$id=$user->id;
-		$email = $post_array['email'];
+		
 		$password=$post_array['password'];
 		$first_name=$post_array['name'];
 		$last_name=$post_array['name'];
 		
 		if($password != $user->password){
-			$data = array('first_name'=>$first_name,'last_name'=>$last_name,'email' =>$email,'password' =>$password );
+			$data = array('first_name'=>$first_name,'last_name'=>$last_name,'password' =>$password );
 			$this->ion_auth->update(strval($id), $data);
 	
 		}
 		else {
-			$data = array('first_name'=>$first_name,'last_name'=>$last_name,'email' =>$email);
+			$data = array('first_name'=>$first_name,'last_name'=>$last_name);
 			$this->ion_auth->update(strval($id), $data);
 		}
 		 
@@ -202,13 +192,12 @@ class Students extends CI_Controller {
 		$user_id=$this->ion_auth->update(strval($id), $data);
 	
 	} */
-	function check_duplicate($value,$row)
+	
+        function check_duplicate($value,$row)
 	{
-		
-		 
-		$row_id=$this->uri->segment(5);
-		//checks for duplicate entries in db return true if exist else false
-		if($this->users->check_duplicate($value,$row_id)){
+          $row_id=$this->uri->segment(5);
+	//checks for duplicate entries in db return true if exist else false
+		if($this->users->check_duplicate_student($value,$row_id)){
 			//dont validate on edit
 			$this->form_validation->set_message('check_duplicate',"Email {$value} already exist");
 			return false;
@@ -223,8 +212,6 @@ class Students extends CI_Controller {
 
 	
 	function call_before_insert($post_array){
-		
-		
 			
 		$username = $post_array['email'];
 		$password =  $post_array['password'];
@@ -257,7 +244,7 @@ class Students extends CI_Controller {
 		$this->db->trans_commit();
 		
 		//send mail if insetion successfull
-		send_mail ($email,$password,"kmdc student imfo");
+		//send_mail ($email,$password,"kmdc student imfo");
 		
 		
 		}
