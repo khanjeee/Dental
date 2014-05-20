@@ -26,7 +26,7 @@ if ( ! function_exists('test_method'))
     	$CI->load->helper('email');
     	
     	$data=array('email'=>$email,'password'=>$password);
-    	$CI->email->initialize(array(	'mailtype' => 'html','validate' => TRUE));
+    	//$CI->email->initialize(array(	'mailtype' => 'html','validate' => TRUE));
     	
     	$mail_content = $CI->load->view('email/template_user.php',$data,TRUE);
     	$CI->email->from('admin@kmdc.edu.pk', 'KMDC|Admin');

@@ -244,7 +244,7 @@ class Students extends CI_Controller {
 		$this->db->trans_commit();
 		
 		//send mail if insetion successfull
-		send_mail ($email,$password,"kmdc student imfo");
+		//send_mail ($email,$password,"kmdc student imfo");
 		
 		
 		}
